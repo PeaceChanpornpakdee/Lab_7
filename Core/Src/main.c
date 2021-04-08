@@ -113,7 +113,7 @@ int main(void)
 		/* USER CODE BEGIN 3 */
 
 		//RAW Read 1kHz / 1ms
-//		if (micros() - Timestamp_Encoder >= 1000) //us
+//		if (micros() - Timestamp_Encoder >= 1000) //us   //can adjust sampling time
 //		{
 //			Timestamp_Encoder = micros();
 //			EncoderVel = EncoderVelocity_Update();
