@@ -112,21 +112,21 @@ int main(void)
 
 		/* USER CODE BEGIN 3 */
 
-		//RAW Read 1kHz
-		if (micros() - Timestamp_Encoder >= 1000)
-		{
-			Timestamp_Encoder = micros();
-			EncoderVel = EncoderVelocity_Update();
-		}
-
-
-
-		//Add LPF?
-//		if (micros() - Timestamp_Encoder >= 100)
+		//RAW Read 1kHz / 1ms
+//		if (micros() - Timestamp_Encoder >= 1000) //us
 //		{
 //			Timestamp_Encoder = micros();
-//			EncoderVel = (EncoderVel * 99 + EncoderVelocity_Update()) / 100.0;
+//			EncoderVel = EncoderVelocity_Update();
 //		}
+
+
+
+		//Add LPF? (Low Pass Filter)
+		if (micros() - Timestamp_Encoder >= 100)
+		{
+			Timestamp_Encoder = micros();
+			EncoderVel = (EncoderVel * 99 + EncoderVelocity_Update()) / 100.0;
+		}
 
 	}
 	/* USER CODE END 3 */
@@ -362,8 +362,8 @@ float EncoderVelocity_Update()
 	int32_t EncoderPositionDiff;
 	uint64_t EncoderTimeDiff;
 
-	EncoderTimeDiff = EncoderNowTimestamp - EncoderLastTimestamp;
-	EncoderPositionDiff = EncoderNowPosition - EncoderLastPosition;
+	EncoderTimeDiff = EncoderNowTimestamp - EncoderLastTimestamp;   //dt
+	EncoderPositionDiff = EncoderNowPosition - EncoderLastPosition; //dp
 
 	//compensate overflow and underflow
 	if (EncoderPositionDiff >= MAX_SUBPOSITION_OVERFLOW)
