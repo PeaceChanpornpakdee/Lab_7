@@ -47,15 +47,8 @@ UART_HandleTypeDef huart2;
 
 /* USER CODE BEGIN PV */
 uint64_t _micros = 0;
-uint16_t PWMOut = 0;
-uint64_t TimeOutputLoop = 0;
-
 float EncoderVel = 0;
-float Velocity_Motor 	= 0;
-float Velocity_Desired 	= 0;
-float Velocity_Error  	= 0;
 uint64_t Timestamp_Encoder = 0;
-
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -134,24 +127,6 @@ int main(void)
 			Timestamp_Encoder = micros();
 			EncoderVel = (EncoderVel * 99 + EncoderVelocity_Update()) / 100.0;
 		}
-
-		if (micros() - TimeOutputLoop > 1000)
-		{
-			TimeOutputLoop = micros();
-			// #001  (Constant Output's frequency 1kHz)
-
-			Velocity_Motor = EncoderVel * 60 / (12*64); //  teeth/s -> RPM
-
-			Velocity_Error = Velocity_Desired - Velocity_Motor;
-
-
-//			PWMOut = PWMOut + (VoltageError * K_p);
-//
-//
-//			__HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_1, PWMOut);
-		}
-
-
 
 	}
 	/* USER CODE END 3 */
