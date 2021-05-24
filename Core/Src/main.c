@@ -47,7 +47,11 @@ UART_HandleTypeDef huart2;
 
 /* USER CODE BEGIN PV */
 uint64_t _micros = 0;
-float EncoderVel = 0;
+float EncoderVel 		= 0;
+float Velocity_Motor 	= 0;
+float Velocity_Desired 	= 0;
+float Velocity_Error  	= 0;
+
 uint64_t Timestamp_Encoder = 0;
 /* USER CODE END PV */
 
@@ -126,6 +130,9 @@ int main(void)
 		{
 			Timestamp_Encoder = micros();
 			EncoderVel = (EncoderVel * 99 + EncoderVelocity_Update()) / 100.0;
+
+			Velocity_Motor = EncoderVel * 60 / 3072.0; //  pulse/s -> RPM   (1/4 * 1/12 * 1/64)
+			Velocity_Error = Velocity_Desired - Velocity_Motor;
 		}
 
 	}
