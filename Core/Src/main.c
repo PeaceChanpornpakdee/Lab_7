@@ -139,8 +139,6 @@ int main(void)
 
 			Velocity_Motor = EncoderVel * 60 / 3072.0; //  pulse/s -> RPM   (1/4 * 1/12 * 1/64)
 
-			Velocity_Error = Velocity_Desired - Velocity_Motor;
-
 			PID_Control();
 			MotorDrive();
 		}
@@ -472,6 +470,8 @@ uint64_t micros()
 
 void PID_Control()
 {
+	Velocity_Error = Velocity_Desired - Velocity_Motor;
+
 	float dt = 0.001;
 	float derivative = (Velocity_Error - Velocity_Error_Previous)/dt;
 	Velocity_Error_Sum += (Velocity_Error * dt);
