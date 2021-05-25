@@ -47,7 +47,8 @@ TIM_HandleTypeDef htim3;
 UART_HandleTypeDef huart2;
 
 /* USER CODE BEGIN PV */
-uint64_t _micros = 0;
+uint64_t _micros 	= 0;
+uint16_t PWMOut 	= 0;
 float EncoderVel 		= 0;
 float Velocity_Motor 	= 0;
 float Velocity_Desired 	= 0;
@@ -65,6 +66,8 @@ static void MX_TIM3_Init(void);
 /* USER CODE BEGIN PFP */
 uint64_t micros();
 float EncoderVelocity_Update();
+void PID_Control();
+void MotorDrive();
 
 /* USER CODE END PFP */
 
@@ -126,7 +129,8 @@ int main(void)
 
 			Velocity_Error = Velocity_Desired - Velocity_Motor;
 
-
+			PID_Control();
+			MotorDrive();
 		}
 
 	}
@@ -452,6 +456,16 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 uint64_t micros()
 {
 	return _micros + htim2.Instance->CNT;
+}
+
+void PID_Control()
+{
+
+}
+
+void MotorDrive()
+{
+
 }
 /* USER CODE END 4 */
 
