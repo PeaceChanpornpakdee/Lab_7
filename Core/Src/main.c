@@ -48,12 +48,20 @@ UART_HandleTypeDef huart2;
 
 /* USER CODE BEGIN PV */
 uint64_t _micros 	= 0;
-int   PWMOut 	= 0;
+int   PWMOut 		= 0;
 float EncoderVel 		= 0;
 float Velocity_Motor 	= 0;
 float Velocity_Desired 	= 0;
 float Velocity_Error  	= 0;
+float Velocity_Error_Previous  	= 0;
+float Velocity_Error_Sum  		= 0;
+
 uint64_t Timestamp_Encoder = 0;
+
+float K_P	= 0;
+float K_I	= 0;
+float K_D   = 0;
+
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -124,7 +132,7 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-		if (micros() - Timestamp_Encoder >= 1000)
+		if (micros() - Timestamp_Encoder >= 1000) //1000us = 0.001s = 1kHz
 		{
 			Timestamp_Encoder = micros();
 			EncoderVel = (EncoderVel * 99 + EncoderVelocity_Update()) / 100.0;  //Add LPF? (Low Pass Filter)
@@ -464,12 +472,18 @@ uint64_t micros()
 
 void PID_Control()
 {
+	float dt = 0.001;
+	float derivative = (Velocity_Error - Velocity_Error_Previous)/dt;
+	Velocity_Error_Sum += (Velocity_Error * dt);
 
+	PWMOut = (K_P * Velocity_Error) + (K_I * Velocity_Error_Sum) + (K_D * derivative);
+
+	Velocity_Error_Previous = Velocity_Error;
 }
 
 void MotorDrive()
 {
-	if(PWMOut > 0)
+	if(PWMOut >= 0)
 	{
 		__HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_1, PWMOut);
 		__HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_2, 0);
@@ -477,7 +491,7 @@ void MotorDrive()
 	else
 	{
 		__HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_1, 0);
-		__HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_2, PWMOut);
+		__HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_2, -PWMOut);
 	}
 }
 /* USER CODE END 4 */
