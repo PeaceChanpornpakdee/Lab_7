@@ -48,7 +48,7 @@ UART_HandleTypeDef huart2;
 
 /* USER CODE BEGIN PV */
 uint64_t _micros 	= 0;
-uint16_t PWMOut 	= 0;
+int   PWMOut 	= 0;
 float EncoderVel 		= 0;
 float Velocity_Motor 	= 0;
 float Velocity_Desired 	= 0;
@@ -111,6 +111,10 @@ int main(void)
   /* USER CODE BEGIN 2 */
 	HAL_TIM_Base_Start_IT(&htim2);
 	HAL_TIM_Encoder_Start(&htim1, TIM_CHANNEL_ALL);
+	HAL_TIM_Base_Start(&htim3);
+	HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_1);
+	HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_2);
+
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -465,7 +469,16 @@ void PID_Control()
 
 void MotorDrive()
 {
-
+	if(PWMOut > 0)
+	{
+		__HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_1, PWMOut);
+		__HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_2, 0);
+	}
+	else
+	{
+		__HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_1, 0);
+		__HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_2, PWMOut);
+	}
 }
 /* USER CODE END 4 */
 
